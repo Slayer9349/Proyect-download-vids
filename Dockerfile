@@ -11,19 +11,25 @@ RUN apt-get update && apt-get install -y \
 # Clonar el repositorio de BunkrDownloader
 RUN git clone https://github.com/Lysagxra/BunkrDownloader.git /app/bunkr
 
+# Instalar dependencias del BunkrDownloader
+RUN cd /app/bunkr && pip install --no-cache-dir -r requirements.txt
+
 # Copiar la aplicación web
 COPY app.py /app/
 COPY requirements-web.txt /app/
+COPY templates/ /app/templates/
 
-# Instalar dependencias de Python
-RUN pip install --no-cache-dir -r /app/bunkr/requirements.txt
+# Instalar dependencias de la aplicación web
 RUN pip install --no-cache-dir -r /app/requirements-web.txt
 
 # Crear carpetas necesarias
-RUN mkdir -p /app/Downloads /app/uploads
+RUN mkdir -p /app/Downloads
+
+# Cambiar permisos
+RUN chmod +x /app/app.py
 
 # Exponer puerto
 EXPOSE 5000
 
 # Comando para iniciar la aplicación
-CMD ["python", "app.py"]
+CMD ["python", "/app/app.py"]
